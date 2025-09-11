@@ -1,5 +1,5 @@
 {
-    "generated_at": "2025-09-11T19:41:26+00:00",
+    "generated_at": "2025-09-11T19:49:35+00:00",
     "plan": [
         {
             "op": "create_table",
@@ -90,7 +90,7 @@
                 },
                 "room_id": {
                     "name": "room_id",
-                    "type": "TEXT",
+                    "type": "CHAR(36)",
                     "nullable": false,
                     "default": null,
                     "is_pk": false
@@ -130,6 +130,19 @@
             "destructive": false
         },
         {
+            "op": "add_fk",
+            "table": "offers",
+            "fk": {
+                "name": "fk_offers_room_id",
+                "column": "room_id",
+                "ref_table": "rooms",
+                "ref_column": "id",
+                "on_delete": "RESTRICT",
+                "on_update": "CASCADE"
+            },
+            "destructive": false
+        },
+        {
             "op": "create_table",
             "table": "rooms",
             "columns": {
@@ -156,7 +169,7 @@
                 },
                 "hotel_id": {
                     "name": "hotel_id",
-                    "type": "TEXT",
+                    "type": "CHAR(36)",
                     "nullable": false,
                     "default": null,
                     "is_pk": false
@@ -206,138 +219,84 @@
             "destructive": false
         },
         {
-            "op": "modify_column",
-            "table": "users",
-            "column": {
-                "name": "name",
-                "type": "TEXT",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
+            "op": "add_fk",
+            "table": "rooms",
+            "fk": {
+                "name": "fk_rooms_hotel_id",
+                "column": "hotel_id",
+                "ref_table": "hotels",
+                "ref_column": "id",
+                "on_delete": "RESTRICT",
+                "on_update": "CASCADE"
             },
-            "old_column": {
-                "name": "name",
-                "type": "text",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
-            },
-            "destructive": true
+            "destructive": false
         },
         {
-            "op": "modify_column",
+            "op": "create_table",
             "table": "users",
-            "column": {
-                "name": "password",
-                "type": "TEXT",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
+            "columns": {
+                "name": {
+                    "name": "name",
+                    "type": "TEXT",
+                    "nullable": false,
+                    "default": null,
+                    "is_pk": false
+                },
+                "password": {
+                    "name": "password",
+                    "type": "TEXT",
+                    "nullable": false,
+                    "default": null,
+                    "is_pk": false
+                },
+                "email": {
+                    "name": "email",
+                    "type": "TEXT",
+                    "nullable": false,
+                    "default": null,
+                    "is_pk": false
+                },
+                "active": {
+                    "name": "active",
+                    "type": "INTEGER",
+                    "nullable": false,
+                    "default": null,
+                    "is_pk": false
+                },
+                "id": {
+                    "name": "id",
+                    "type": "TEXT",
+                    "nullable": false,
+                    "default": null,
+                    "is_pk": true
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "DATETIME",
+                    "nullable": true,
+                    "default": "CURRENT_TIMESTAMP",
+                    "is_pk": false
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "DATETIME",
+                    "nullable": true,
+                    "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+                    "is_pk": false
+                }
             },
-            "old_column": {
-                "name": "password",
-                "type": "text",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
-            },
-            "destructive": true
+            "destructive": false
         },
         {
-            "op": "modify_column",
+            "op": "add_index",
             "table": "users",
-            "column": {
-                "name": "email",
-                "type": "TEXT",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
+            "index": {
+                "name": "uniq_users_email",
+                "column": "email",
+                "type": "unique"
             },
-            "old_column": {
-                "name": "email",
-                "type": "text",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
-            },
-            "destructive": true
-        },
-        {
-            "op": "modify_column",
-            "table": "users",
-            "column": {
-                "name": "active",
-                "type": "INTEGER",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
-            },
-            "old_column": {
-                "name": "active",
-                "type": "integer",
-                "nullable": false,
-                "default": null,
-                "is_pk": false
-            },
-            "destructive": true
-        },
-        {
-            "op": "modify_column",
-            "table": "users",
-            "column": {
-                "name": "id",
-                "type": "TEXT",
-                "nullable": false,
-                "default": null,
-                "is_pk": true
-            },
-            "old_column": {
-                "name": "id",
-                "type": "text",
-                "nullable": false,
-                "default": null,
-                "is_pk": true
-            },
-            "destructive": true
-        },
-        {
-            "op": "modify_column",
-            "table": "users",
-            "column": {
-                "name": "created_at",
-                "type": "DATETIME",
-                "nullable": true,
-                "default": "CURRENT_TIMESTAMP",
-                "is_pk": false
-            },
-            "old_column": {
-                "name": "created_at",
-                "type": "datetime",
-                "nullable": true,
-                "default": "CURRENT_TIMESTAMP",
-                "is_pk": false
-            },
-            "destructive": true
-        },
-        {
-            "op": "modify_column",
-            "table": "users",
-            "column": {
-                "name": "updated_at",
-                "type": "DATETIME",
-                "nullable": true,
-                "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                "is_pk": false
-            },
-            "old_column": {
-                "name": "updated_at",
-                "type": "datetime",
-                "nullable": true,
-                "default": "CURRENT_TIMESTAMP",
-                "is_pk": false
-            },
-            "destructive": true
+            "destructive": false
         }
     ],
-    "applied_at": "2025-09-11T19:41:33+00:00"
+    "applied_at": "2025-09-11T19:49:38+00:00"
 }

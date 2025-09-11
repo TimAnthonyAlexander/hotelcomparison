@@ -15,7 +15,7 @@ class Offer extends BaseModel
     // public ?string $email = null;
     // public bool $active = true;
     public float $price = 0.0;
-    public string $room_id = '';
+    public Room $room; // Foreign key relation
 
     // Optional: Define custom table name
     // protected static ?string $table = 'Offer_table';

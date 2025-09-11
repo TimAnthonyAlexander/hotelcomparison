@@ -17,7 +17,7 @@ class Room extends BaseModel
     public string $title = '';
     public string $type = '';
     public int $capacity = 1;
-    public string $hotel_id = '';
+    public Hotel $hotel; // Foreign key relation
 
     // Optional: Define custom table name
     // protected static ?string $table = 'Room_table';
