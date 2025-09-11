@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use BaseApi\Database\Relations\BelongsTo;
 use BaseApi\Models\BaseModel;
 
 /**
@@ -16,7 +17,7 @@ class Offer extends BaseModel
         'price' => 'index'
     ];
 
-    public function room(): \BaseApi\Database\Relations\BelongsTo
+    public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
     }

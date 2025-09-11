@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use BaseApi\Database\Relations\HasMany;
 use BaseApi\Models\BaseModel;
 
 /**
@@ -19,7 +20,7 @@ class Hotel extends BaseModel
         'rating' => 'index'
     ];
 
-    public function rooms(): \BaseApi\Database\Relations\HasMany
+    public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);
     }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use BaseApi\Database\Relations\BelongsTo;
+use BaseApi\Database\Relations\HasMany;
 use BaseApi\Models\BaseModel;
 
 /**
@@ -19,12 +21,12 @@ class Room extends BaseModel
         'type' => 'index'
     ];
 
-    public function hotel(): \BaseApi\Database\Relations\BelongsTo
+    public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);
     }
 
-    public function bookings(): \BaseApi\Database\Relations\HasMany
+    public function offers(): HasMany
     {
         return $this->hasMany(Offer::class);
     }
