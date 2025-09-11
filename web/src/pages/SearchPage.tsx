@@ -28,17 +28,29 @@ import type { Hotel, SearchResponse } from '../services/api';
 
 const SearchPage = () => {
   const [location, setLocation] = useState('');
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('rating');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortBy, setSortBy] = useState('price');
+  const [sortOrder, setSortOrder] = useState('asc');
   const navigate = useNavigate();
 
   const handleSearch = async (page = 1) => {
     if (!location.trim()) {
       setError('Please enter a location');
+      return;
+    }
+
+    if (!checkInDate || !checkOutDate) {
+      setError('Please select check-in and check-out dates');
+      return;
+    }
+
+    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+      setError('Check-out date must be after check-in date');
       return;
     }
 
@@ -48,6 +60,8 @@ const SearchPage = () => {
     try {
       const response = await ApiService.searchHotels({
         location: location.trim(),
+        check_in_date: checkInDate,
+        check_out_date: checkOutDate,
         page,
         per_page: 12,
         sort: sortBy,
@@ -122,18 +136,43 @@ const SearchPage = () => {
               position: 'absolute',
               top: 16,
               right: 16,
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              borderRadius: 2,
-              px: 1,
-              py: 0.5,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              alignItems: 'flex-end',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Box
+              sx={{
+                backgroundColor: 'rgba(255,255,255,0.9)',
+                borderRadius: 2,
+                px: 1,
+                py: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+              }}
+            >
               <StarIcon sx={{ color: '#ffd700', fontSize: 16 }} />
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 {hotel.rating.toFixed(1)}
               </Typography>
             </Box>
+            {hotel.best_price && (
+              <Box
+                sx={{
+                  backgroundColor: 'rgba(46, 125, 50, 0.9)',
+                  color: 'white',
+                  borderRadius: 2,
+                  px: 1,
+                  py: 0.5,
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  €{hotel.best_price.toFixed(0)}
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
         <CardContent sx={{ flexGrow: 1, p: 3 }}>
@@ -179,15 +218,40 @@ const SearchPage = () => {
           >
             {hotel.description || 'Discover this amazing hotel with great amenities and service.'}
           </Typography>
-          <Chip
-            label={hotel.source}
-            size="small"
-            sx={{
-              backgroundColor: 'primary.main',
-              color: 'white',
-              fontWeight: 500,
-            }}
-          />
+          
+          {hotel.best_price && (
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" color="success.main" sx={{ fontWeight: 600 }}>
+                From €{hotel.best_price.toFixed(0)} per night
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {hotel.available_rooms} room{hotel.available_rooms !== 1 ? 's' : ''} • {hotel.total_offers} offer{hotel.total_offers !== 1 ? 's' : ''}
+              </Typography>
+            </Box>
+          )}
+          
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Chip
+              label={hotel.source}
+              size="small"
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                fontWeight: 500,
+              }}
+            />
+            {hotel.best_price && (
+              <Chip
+                label="Available"
+                size="small"
+                sx={{
+                  backgroundColor: 'success.main',
+                  color: 'white',
+                  fontWeight: 500,
+                }}
+              />
+            )}
+          </Box>
         </CardContent>
       </Card>
     </Box>
@@ -232,21 +296,20 @@ const SearchPage = () => {
           elevation={0}
           sx={{
             p: 3,
-            maxWidth: 600,
+            maxWidth: 800,
             mx: 'auto',
             borderRadius: 3,
             backgroundColor: 'white',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
           }}
         >
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
               fullWidth
               variant="outlined"
               placeholder="Enter destination (e.g., Berlin, Paris, New York)"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               InputProps={{
                 startAdornment: <LocationIcon sx={{ color: 'text.secondary', mr: 1 }} />,
               }}
@@ -256,22 +319,47 @@ const SearchPage = () => {
                 },
               }}
             />
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => handleSearch()}
-              disabled={loading}
-              sx={{
-                minWidth: 120,
-                borderRadius: 2,
-                background: 'linear-gradient(45deg, #2196f3 30%, #ff4081 90%)',
-                '&:hover': {
-                  background: 'linear-gradient(45deg, #1976d2 30%, #c60055 90%)',
-                },
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : <SearchIcon />}
-            </Button>
+            
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <TextField
+                type="date"
+                label="Check-in"
+                value={checkInDate}
+                onChange={(e) => setCheckInDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                sx={{ flex: 1 }}
+                inputProps={{
+                  min: new Date().toISOString().split('T')[0],
+                }}
+              />
+              <TextField
+                type="date"
+                label="Check-out"
+                value={checkOutDate}
+                onChange={(e) => setCheckOutDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                sx={{ flex: 1 }}
+                inputProps={{
+                  min: checkInDate || new Date().toISOString().split('T')[0],
+                }}
+              />
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => handleSearch()}
+                disabled={loading}
+                sx={{
+                  minWidth: 120,
+                  borderRadius: 2,
+                  background: 'linear-gradient(45deg, #2196f3 30%, #ff4081 90%)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #1976d2 30%, #c60055 90%)',
+                  },
+                }}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : <SearchIcon />}
+              </Button>
+            </Box>
           </Box>
 
           {/* Sort Controls */}
@@ -284,9 +372,10 @@ const SearchPage = () => {
                   label="Sort by"
                   onChange={(e) => setSortBy(e.target.value)}
                 >
+                  <MenuItem value="best_price">Price</MenuItem>
                   <MenuItem value="rating">Rating</MenuItem>
                   <MenuItem value="title">Name</MenuItem>
-                  <MenuItem value="created_at">Date Added</MenuItem>
+                  <MenuItem value="available_rooms">Availability</MenuItem>
                 </Select>
               </FormControl>
               <FormControl size="small" sx={{ minWidth: 100 }}>
@@ -315,12 +404,19 @@ const SearchPage = () => {
       {/* Search Results */}
       {searchResults && (
         <Box>
-          <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h4" component="h2" sx={{ fontWeight: 300 }}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" component="h2" sx={{ fontWeight: 300, mb: 1 }}>
               Hotels in {searchResults.search.location}
             </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {searchResults.pagination.total_count} hotels found
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+              {new Date(searchResults.search.check_in_date).toLocaleDateString('en-US', { 
+                weekday: 'short', month: 'short', day: 'numeric' 
+              })} - {new Date(searchResults.search.check_out_date).toLocaleDateString('en-US', { 
+                weekday: 'short', month: 'short', day: 'numeric' 
+              })}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {searchResults.pagination.total_count} hotel{searchResults.pagination.total_count !== 1 ? 's' : ''} available
             </Typography>
           </Box>
 

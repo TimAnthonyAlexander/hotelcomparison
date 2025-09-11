@@ -55,6 +55,8 @@ export type GetMeResponse = Envelope<{ user: any[] }>;
 
 export interface GetHotelSearchRequestQuery {
   location: string;
+  check_in_date: string;
+  check_out_date: string;
   page: number;
   per_page: number;
   sort: string;

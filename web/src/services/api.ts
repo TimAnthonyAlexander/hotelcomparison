@@ -11,6 +11,8 @@ export class ApiService {
   static async searchHotels(params: GetHotelSearchRequestQuery): Promise<GetHotelSearchResponse> {
     const queryParams = new URLSearchParams({
       location: params.location,
+      check_in_date: params.check_in_date || '',
+      check_out_date: params.check_out_date || '',
       page: params.page.toString(),
       per_page: params.per_page.toString(),
       sort: params.sort,
@@ -57,6 +59,11 @@ export interface Hotel {
   external_id: string;
   created_at?: string;
   updated_at?: string;
+  // Search-specific fields
+  best_price?: number;
+  total_offers?: number;
+  available_rooms?: number;
+  currency?: string;
 }
 
 export interface Room {
@@ -98,6 +105,8 @@ export interface SearchResponse {
   };
   search: {
     location: string;
+    check_in_date: string;
+    check_out_date: string;
     sort: string;
     order: string;
   };
