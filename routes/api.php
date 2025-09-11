@@ -2,6 +2,8 @@
 
 use BaseApi\App;
 use App\Controllers\HealthController;
+use App\Controllers\HotelSearchController;
+use App\Controllers\HotelOffersController;
 use App\Controllers\LoginController;
 use App\Controllers\LogoutController;
 use App\Controllers\MeController;
@@ -56,5 +58,22 @@ $router->get(
     [
         AuthMiddleware::class,
         MeController::class,
+    ],
+);
+
+// Hotel search and offers endpoints
+$router->get(
+    '/hotels/search',
+    [
+        RateLimitMiddleware::class => ['limit' => '100/1m'],
+        HotelSearchController::class,
+    ],
+);
+
+$router->get(
+    '/hotels/{hotel_id}/offers',
+    [
+        RateLimitMiddleware::class => ['limit' => '100/1m'],
+        HotelOffersController::class,
     ],
 );
