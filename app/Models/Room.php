@@ -15,10 +15,15 @@ class Room extends BaseModel
     public string $type = '';
     public int $capacity = 1;
     public Hotel $hotel;
+    public string $source = '';
+    public string $external_id = '';
 
     public static array $indexes = [
         'title' => 'index',
-        'type' => 'index'
+        'type' => 'index',
+        'source' => 'index',
+        'external_id' => 'index',
+        ['source', 'external_id'] => 'unique'
     ];
 
     public function hotel(): BelongsTo
