@@ -32,17 +32,16 @@ class DefaultMapper implements MapperInterface
         $room->title = $dto->room->getTitle();
         $room->type = $dto->room->getNormalizedType();
         $room->capacity = $dto->room->getCapacity();
-        $room->hotel = $hotel;
+        $room->hotel_id = $hotel->id;
         $room->source = $source;
         $room->external_id = $this->generateRoomExternalId($dto->hotelId, $dto->room);
 
-        // Create offer
+        // Create offer (room will be set after room is saved)
         $offer = new Offer();
         $offer->price = $dto->price;
         $offer->currency = $dto->currency;
         $offer->check_in_date = $dto->checkInDate;
         $offer->check_out_date = $dto->checkOutDate;
-        $offer->room = $room;
         $offer->source = $source;
         $offer->external_id = $dto->offerId;
         $offer->last_seen_at = date('Y-m-d H:i:s');
@@ -76,13 +75,36 @@ class DefaultMapper implements MapperInterface
     private function generateRoomExternalId(string $hotelId, \App\Import\DTOs\RoomDTO $room): string
     {
         // Create a stable external ID for the room based on hotel and room characteristics
-        $roomKey = $hotelId . '_' . $room->getNormalizedType();
+        // Following the pattern: amadeus:hotelId:roomKey where roomKey is deterministic hash
         
-        // Add description hash if available for more uniqueness
-        if (!empty($room->description)) {
-            $roomKey .= '_' . substr(md5($room->description), 0, 8);
+        $components = [
+            $hotelId,
+            $this->normalizeString($room->getNormalizedType()),
+            $this->normalizeString($room->description)
+        ];
+        
+        // Add capacity if available for better differentiation
+        if ($room->getCapacity() > 0) {
+            $components[] = 'cap' . $room->getCapacity();
         }
         
-        return $roomKey;
+        // Add bed information if available from typeEstimated
+        if (!empty($room->typeEstimated['beds'])) {
+            $components[] = 'beds' . $room->typeEstimated['beds'];
+        }
+        
+        // Create deterministic hash from all components
+        $roomKey = substr(md5(implode('|', array_filter($components))), 0, 12);
+        
+        return $hotelId . '_' . $roomKey;
+    }
+    
+    private function normalizeString(string $text): string
+    {
+        // Normalize strings for consistent hashing
+        $text = trim(strtolower($text));
+        $text = preg_replace('/\s+/', ' ', $text); // Collapse whitespace
+        $text = preg_replace('/[^a-z0-9\s]/', '', $text); // Remove special chars
+        return $text;
     }
 }

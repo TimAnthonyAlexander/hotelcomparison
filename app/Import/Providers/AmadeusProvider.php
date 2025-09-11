@@ -21,7 +21,7 @@ class AmadeusProvider implements ProviderInterface
         private readonly string $clientId,
         private readonly string $clientSecret,
         private readonly bool $isTest = true,
-        private readonly int $maxHotelIdsPerCall = 50
+        private readonly int $maxHotelIdsPerCall = 20
     ) {}
 
     public function authenticate(): AccessTokenDTO
@@ -170,10 +170,12 @@ class AmadeusProvider implements ProviderInterface
             $params['checkOutDate'] = $searchParams['checkOutDate'];
         }
 
-        $response = $this->makeRequest('GET', $url . '?' . http_build_query($params), null, [
+        $fullUrl = $url . '?' . http_build_query($params);
+        
+        $response = $this->makeRequest('GET', $fullUrl, null, [
             'Authorization: ' . $token->tokenType . ' ' . $token->token
         ]);
-
+        
         return $this->parseOffersResponse($response);
     }
 

@@ -1,5 +1,5 @@
 {
-    "generated_at": "2025-09-11T20:40:23+00:00",
+    "generated_at": "2025-09-11T20:58:59+00:00",
     "plan": [
         {
             "op": "modify_column",
@@ -196,7 +196,7 @@
             "table": "offers",
             "column": {
                 "name": "room_id",
-                "type": "CHAR(36)",
+                "type": "TEXT",
                 "nullable": false,
                 "default": null,
                 "is_pk": false
@@ -401,6 +401,16 @@
             "destructive": true
         },
         {
+            "op": "add_index",
+            "table": "offers",
+            "index": {
+                "name": "idx_offers_currency",
+                "column": "currency",
+                "type": "index"
+            },
+            "destructive": false
+        },
+        {
             "op": "add_fk",
             "table": "offers",
             "fk": {
@@ -481,7 +491,7 @@
             "table": "rooms",
             "column": {
                 "name": "hotel_id",
-                "type": "CHAR(36)",
+                "type": "TEXT",
                 "nullable": false,
                 "default": null,
                 "is_pk": false
@@ -742,5 +752,6 @@
             },
             "destructive": true
         }
-    ]
+    ],
+    "applied_at": "2025-09-11T20:59:26+00:00"
 }

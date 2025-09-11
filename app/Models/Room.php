@@ -14,7 +14,8 @@ class Room extends BaseModel
     public string $title = '';
     public string $type = '';
     public int $capacity = 1;
-    public Hotel $hotel;
+    public ?Hotel $hotel = null;
+    public string $hotel_id = '';
     public string $source = '';
     public string $external_id = '';
 

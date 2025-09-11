@@ -47,10 +47,12 @@ class ImportHotelsCommand implements Command
             $mapper = new DefaultMapper();
             
             $providerInstance = $registry->getProvider($provider);
+            $config = ImportConfig::getImportSettings();
+            $config['import_ratings'] = false; // Temporarily disable ratings
             $orchestrator = new ImportOrchestrator(
                 provider: $providerInstance,
                 mapper: $mapper,
-                config: ImportConfig::getImportSettings()
+                config: $config
             );
 
             // Run the import

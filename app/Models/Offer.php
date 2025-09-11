@@ -11,7 +11,8 @@ use BaseApi\Models\BaseModel;
 class Offer extends BaseModel
 {
     public float $price = 0.0;
-    public Room $room;
+    public ?Room $room = null;
+    public string $room_id = '';
     public string $currency = 'EUR';
     public string $check_in_date = '';
     public string $check_out_date = '';
@@ -26,7 +27,8 @@ class Offer extends BaseModel
         'external_id' => 'index',
         'check_in_date' => 'index',
         'is_active' => 'index',
-        'last_seen_at' => 'index'
+        'last_seen_at' => 'index',
+        'currency' => 'index'
     ];
 
     public function room(): BelongsTo
