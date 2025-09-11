@@ -136,6 +136,7 @@ class ImportOrchestrator
                 $result = $this->mapper->mapOffer($offerDTO, $this->provider->getProviderName(), $hotel);
                 
                 $roomResult = $this->upsertRoom($result['room']);
+                $result['offer']->room = $roomResult['room']; // Initialize the relationship
                 $result['offer']->room_id = $roomResult['room']->id;
                 
                 $offerResult = $this->upsertOffer($result['offer']);
@@ -229,6 +230,7 @@ class ImportOrchestrator
             $existing->title = $room->title;
             $existing->type = $room->type;
             $existing->capacity = $room->capacity;
+            $existing->hotel = $room->hotel; // Set the relationship
             $existing->hotel_id = $room->hotel_id;
             $existing->save();
             return ['room' => $existing, 'created' => false];
@@ -253,6 +255,7 @@ class ImportOrchestrator
             $existing->currency = $offer->currency;
             $existing->check_in_date = $offer->check_in_date;
             $existing->check_out_date = $offer->check_out_date;
+            $existing->room = $offer->room; // Set the relationship
             $existing->room_id = $offer->room_id;
             $existing->last_seen_at = $offer->last_seen_at;
             $existing->is_active = $offer->is_active;

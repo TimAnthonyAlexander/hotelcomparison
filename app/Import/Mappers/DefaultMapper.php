@@ -32,6 +32,7 @@ class DefaultMapper implements MapperInterface
         $room->title = $dto->room->getTitle();
         $room->type = $dto->room->getNormalizedType();
         $room->capacity = $dto->room->getCapacity();
+        $room->hotel = $hotel; // Initialize the relationship
         $room->hotel_id = $hotel->id;
         $room->source = $source;
         $room->external_id = $this->generateRoomExternalId($dto->hotelId, $dto->room);

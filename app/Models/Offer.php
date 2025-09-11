@@ -11,7 +11,7 @@ use BaseApi\Models\BaseModel;
 class Offer extends BaseModel
 {
     public float $price = 0.0;
-    public ?Room $room = null;
+    public Room $room;
     public string $room_id = '';
     public string $currency = 'EUR';
     public string $check_in_date = '';
