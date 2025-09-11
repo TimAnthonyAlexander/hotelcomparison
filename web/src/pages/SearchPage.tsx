@@ -16,15 +16,18 @@ import {
     Select,
     MenuItem,
     Paper,
-    Grid,
+    Divider,
     Stack,
     InputAdornment,
+    Toolbar,
 } from '@mui/material';
 import {
     Search as SearchIcon,
     LocationOn as LocationIcon,
     Star as StarIcon,
     ArrowForward as ArrowForwardIcon,
+    CalendarMonth as CalendarIcon,
+    Sort as SortIcon,
 } from '@mui/icons-material';
 import { alpha, useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +37,7 @@ import type { Hotel, SearchResponse } from '../services/api';
 function SearchPage() {
     const theme = useTheme();
     const navigate = useNavigate();
+
     const [location, setLocation] = useState('');
     const [checkInDate, setCheckInDate] = useState('');
     const [checkOutDate, setCheckOutDate] = useState('');
@@ -42,7 +46,7 @@ function SearchPage() {
     const [searchResults, setSearchResults] = useState<SearchResponse | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [sortBy, setSortBy] = useState('price');
-    const [sortOrder, setSortOrder] = useState('asc');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     const handleSearch = useCallback(
         async (page = 1) => {
@@ -58,6 +62,7 @@ function SearchPage() {
                 setError('Check-out date must be after check-in date');
                 return;
             }
+
             setLoading(true);
             setError(null);
             try {
@@ -73,8 +78,8 @@ function SearchPage() {
                 setSearchResults(response.data);
                 setCurrentPage(page);
             } catch (err) {
-                setError('Failed to search hotels. Please try again.');
                 console.error('Search error:', err);
+                setError('Failed to search hotels. Please try again.');
             } finally {
                 setLoading(false);
             }
@@ -82,125 +87,145 @@ function SearchPage() {
         [location, checkInDate, checkOutDate, sortBy, sortOrder]
     );
 
-    const handlePageChange = (_e: React.ChangeEvent<unknown>, page: number) => {
-        handleSearch(page);
-    };
-
     useEffect(() => {
         if (searchResults) handleSearch(currentPage);
     }, [sortBy, sortOrder]);
 
-    function HotelCard({ hotel }: { hotel: Hotel }) {
+    const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
+        handleSearch(page);
+    };
+
+    function ResultItem({ hotel }: { hotel: Hotel }) {
         const accent =
-            hotel.rating >= 4.5 ? theme.palette.success.main : hotel.rating >= 4 ? theme.palette.warning.main : theme.palette.primary.main;
+            hotel.rating >= 4.5
+                ? theme.palette.success.main
+                : hotel.rating >= 4
+                    ? theme.palette.warning.main
+                    : theme.palette.primary.main;
 
         return (
             <Card
                 onClick={() => navigate(`/hotel/${hotel.id}`)}
                 sx={{
-                    height: '100%',
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 0,
+                    overflow: 'hidden',
                     borderRadius: 3,
                     border: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
-                    background: `linear-gradient(180deg, ${alpha(theme.palette.background.paper, 1)} 0%, ${alpha(
-                        theme.palette.background.paper,
-                        0.9
-                    )} 100%)`,
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+                    background: theme.palette.background.paper,
+                    transition: 'transform .2s ease, box-shadow .2s ease, border-color .2s ease',
                     cursor: 'pointer',
-                    transition: 'transform .25s ease, box-shadow .25s ease, border-color .25s ease',
                     '&:hover': {
-                        transform: 'translateY(-6px)',
-                        boxShadow: '0 18px 50px rgba(0,0,0,0.12)',
-                        borderColor: alpha(accent, 0.4),
+                        transform: { md: 'translateY(-2px)' },
+                        borderColor: alpha(accent, 0.5),
+                        boxShadow: '0 16px 40px rgba(0,0,0,.10)',
                     },
                 }}
             >
+                {/* Visual rail / thumbnail */}
                 <Box
                     sx={{
                         position: 'relative',
-                        height: 180,
-                        overflow: 'hidden',
-                        borderTopLeftRadius: 12,
-                        borderTopRightRadius: 12,
-                        background: `radial-gradient(1200px 300px at 20% -10%, ${alpha(accent, 0.25)} 0%, transparent 60%),
-                         radial-gradient(1000px 300px at 90% 0%, ${alpha(accent, 0.35)} 0%, transparent 70%),
-                         linear-gradient(135deg, ${alpha(accent, 0.28)}, ${alpha(theme.palette.primary.light, 0.18)})`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        width: { md: 260 },
+                        minHeight: { xs: 150, md: 180 },
+                        flexShrink: 0,
+                        bgcolor: alpha(accent, 0.08),
+                        background: `linear-gradient(140deg, ${alpha(accent, 0.22)} 0%, ${alpha(
+                            theme.palette.primary.light,
+                            0.18
+                        )} 60%, transparent 100%)`,
+                        display: 'grid',
+                        placeItems: 'center',
                     }}
                 >
                     <Typography
                         variant="h3"
                         sx={{
                             color: 'common.white',
+                            textShadow: '0 8px 24px rgba(0,0,0,.35)',
                             fontWeight: 300,
-                            letterSpacing: 2,
-                            textShadow: '0 10px 30px rgba(0,0,0,.35)',
+                            letterSpacing: 1.5,
                             userSelect: 'none',
                         }}
                     >
                         {hotel.title?.charAt(0)?.toUpperCase() || 'H'}
                     </Typography>
 
-                    <Stack
-                        spacing={1}
-                        sx={{ position: 'absolute', top: 12, right: 12, alignItems: 'flex-end' }}
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: 12,
+                            right: 12,
+                            px: 1,
+                            py: 0.5,
+                            borderRadius: 2,
+                            bgcolor: alpha('#fff', 0.95),
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            boxShadow: '0 8px 20px rgba(0,0,0,.15)',
+                        }}
                     >
-                        <Box
-                            sx={{
-                                px: 1,
-                                py: 0.5,
-                                borderRadius: 2,
-                                bgcolor: alpha('#fff', 0.9),
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                            }}
-                        >
-                            <StarIcon sx={{ fontSize: 16, color: '#ffd700' }} />
-                            <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                                {hotel.rating.toFixed(1)}
-                            </Typography>
-                        </Box>
-                        {hotel.best_price && (
-                            <Box
-                                sx={{
-                                    px: 1,
-                                    py: 0.5,
-                                    borderRadius: 2,
-                                    bgcolor: alpha(accent, 0.95),
-                                    color: 'common.white',
-                                    boxShadow: '0 8px 22px rgba(0,0,0,0.18)',
-                                }}
-                            >
-                                <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                                    €{hotel.best_price.toFixed(0)}
-                                </Typography>
-                            </Box>
-                        )}
-                    </Stack>
+                        <StarIcon sx={{ fontSize: 16, color: '#ffd700' }} />
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                            {hotel.rating.toFixed(1)}
+                        </Typography>
+                    </Box>
                 </Box>
 
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                    <Stack spacing={1.5}>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontWeight: 600,
-                                letterSpacing: 0.2,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {hotel.title}
-                        </Typography>
+                {/* Content */}
+                <CardContent
+                    sx={{
+                        flex: 1,
+                        p: { xs: 2.5, md: 3 },
+                        display: 'grid',
+                        gridTemplateColumns: { xs: '1fr', md: '1fr auto' },
+                        alignItems: { md: 'center' },
+                        gap: { xs: 1.5, md: 2 },
+                    }}
+                >
+                    {/* Left: Title, meta, description, chips */}
+                    <Stack spacing={1.25} sx={{ minWidth: 0 }}>
+                        <Stack direction="row" alignItems="center" spacing={1} sx={{ minWidth: 0 }}>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontWeight: 700,
+                                    letterSpacing: 0.2,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {hotel.title}
+                            </Typography>
+                            <Chip
+                                label={hotel.source}
+                                size="small"
+                                sx={{
+                                    ml: 0.5,
+                                    bgcolor: alpha(theme.palette.primary.main, 0.12),
+                                    color: theme.palette.primary.main,
+                                    fontWeight: 600,
+                                    borderRadius: 2,
+                                }}
+                            />
+                            {hotel.best_price && (
+                                <Chip
+                                    label="Available"
+                                    size="small"
+                                    sx={{
+                                        bgcolor: alpha(theme.palette.success.main, 0.14),
+                                        color: theme.palette.success.main,
+                                        fontWeight: 700,
+                                        borderRadius: 2,
+                                    }}
+                                />
+                            )}
+                        </Stack>
 
-                        <Stack direction="row" spacing={1} alignItems="center">
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
                             <LocationIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
                             <Typography
                                 variant="body2"
@@ -227,46 +252,26 @@ function SearchPage() {
                                 minHeight: 40,
                             }}
                         >
-                            {hotel.description || 'Discover this amazing hotel with great amenities and service.'}
+                            {hotel.description || 'Discover this hotel with solid amenities and service.'}
                         </Typography>
+                    </Stack>
 
+                    {/* Right: Price + meta */}
+                    <Stack
+                        spacing={0.5}
+                        alignItems={{ xs: 'flex-start', md: 'flex-end' }}
+                        sx={{ textAlign: { md: 'right' } }}
+                    >
                         {hotel.best_price && (
-                            <Box>
-                                <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
-                                    From €{hotel.best_price.toFixed(0)} per night
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {hotel.available_rooms} room{hotel.available_rooms !== 1 ? 's' : ''} • {hotel.total_offers} offer{hotel.total_offers !== 1 ? 's' : ''}
-                                </Typography>
-                            </Box>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: 'success.main' }}>
+                                From €{hotel.best_price.toFixed(0)} / night
+                            </Typography>
                         )}
-
-                        <Stack direction="row" spacing={1} alignItems="center">
-                            <Chip
-                                label={hotel.source}
-                                size="small"
-                                sx={{
-                                    bgcolor: alpha(theme.palette.primary.main, 0.12),
-                                    color: theme.palette.primary.main,
-                                    fontWeight: 600,
-                                    borderRadius: 2,
-                                }}
-                            />
-                            {hotel.best_price && (
-                                <Chip
-                                    label="Available"
-                                    size="small"
-                                    sx={{
-                                        bgcolor: alpha(theme.palette.success.main, 0.14),
-                                        color: theme.palette.success.main,
-                                        fontWeight: 700,
-                                        borderRadius: 2,
-                                    }}
-                                />
-                            )}
-                            <Box sx={{ flexGrow: 1 }} />
-                            <ArrowForwardIcon sx={{ fontSize: 18, color: 'text.disabled' }} />
-                        </Stack>
+                        <Typography variant="body2" color="text.secondary">
+                            {hotel.available_rooms} room{hotel.available_rooms !== 1 ? 's' : ''} • {hotel.total_offers}{' '}
+                            offer{hotel.total_offers !== 1 ? 's' : ''}
+                        </Typography>
+                        <ArrowForwardIcon sx={{ mt: { xs: 0.5, md: 1 }, color: 'text.disabled' }} />
                     </Stack>
                 </CardContent>
             </Card>
@@ -274,60 +279,52 @@ function SearchPage() {
     }
 
     return (
-        <Container maxWidth="xl" sx={{ py: { xs: 3, md: 6 } }}>
+        <Box sx={{ bgcolor: 'background.default' }}>
+            {/* Header */}
             <Box
                 sx={{
-                    position: 'relative',
-                    mb: { xs: 4, md: 8 },
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                    p: { xs: 3, md: 6 },
-                    background: `linear-gradient(140deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(
-                        theme.palette.secondary.main,
-                        0.12
-                    )} 100%)`,
-                    backdropFilter: 'blur(4px)',
-                    border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+                    borderBottom: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
+                    background: `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.08)} 0%, transparent 100%)`,
                 }}
             >
-                <Stack spacing={2} alignItems="center" sx={{ textAlign: 'center' }}>
-                    <Typography
-                        variant="h2"
-                        sx={{
-                            fontWeight: 800,
-                            letterSpacing: 0.3,
-                            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                        }}
-                    >
-                        Find Your Perfect Hotel
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 760 }}>
-                        Compare prices and amenities from multiple sources to find the best deals
-                    </Typography>
-                </Stack>
+                <Container maxWidth="lg">
+                    <Box sx={{ py: { xs: 3, md: 4 } }}>
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                fontWeight: 900,
+                                letterSpacing: 0.2,
+                                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                            }}
+                        >
+                            {location}
+                        </Typography>
+                    </Box>
+                </Container>
+            </Box>
 
-                <Paper
-                    elevation={0}
-                    sx={{
-                        mt: { xs: 3, md: 5 },
-                        p: { xs: 2, md: 3 },
-                        borderRadius: 3,
-                        mx: 'auto',
-                        maxWidth: 980,
-                        bgcolor: alpha(theme.palette.background.paper, 0.9),
-                        border: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
-                        boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
-                    }}
-                >
-                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+            {/* Sticky controls bar */}
+            <Paper
+                elevation={0}
+                sx={{
+                    position: 'sticky',
+                    zIndex: 5,
+                    borderRadius: 0,
+                    borderBottom: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
+                    bgcolor: alpha(theme.palette.background.paper, 0.9),
+                    backdropFilter: 'blur(6px)',
+                    top: { xs: 56, md: 'calc(64px + env(safe-area-inset-top, 0px))' },
+                }}
+            >
+                <Container maxWidth="lg">
+                    <Toolbar disableGutters sx={{ py: 1.5, gap: 1.5, flexWrap: 'wrap' }}>
                         <TextField
-                            fullWidth
-                            variant="outlined"
                             placeholder="Destination"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
+                            fullWidth
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -336,6 +333,7 @@ function SearchPage() {
                                 ),
                             }}
                             sx={{
+                                maxWidth: { xs: '100%', md: 320 },
                                 '& .MuiOutlinedInput-root': { borderRadius: 2 },
                             }}
                         />
@@ -345,8 +343,8 @@ function SearchPage() {
                             value={checkInDate}
                             onChange={(e) => setCheckInDate(e.target.value)}
                             InputLabelProps={{ shrink: true }}
-                            sx={{ minWidth: { md: 220 } }}
                             inputProps={{ min: new Date().toISOString().split('T')[0] }}
+                            sx={{ minWidth: 170 }}
                         />
                         <TextField
                             type="date"
@@ -354,125 +352,145 @@ function SearchPage() {
                             value={checkOutDate}
                             onChange={(e) => setCheckOutDate(e.target.value)}
                             InputLabelProps={{ shrink: true }}
-                            sx={{ minWidth: { md: 220 } }}
                             inputProps={{ min: checkInDate || new Date().toISOString().split('T')[0] }}
+                            sx={{ minWidth: 170 }}
                         />
                         <Button
-                            variant="contained"
-                            size="large"
                             onClick={() => handleSearch()}
-                            disabled={loading}
+                            variant="contained"
                             startIcon={!loading ? <SearchIcon /> : undefined}
+                            disabled={loading}
                             sx={{
-                                minWidth: 160,
+                                minWidth: 140,
                                 borderRadius: 2,
                                 fontWeight: 700,
-                                letterSpacing: 0.2,
                                 background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                                 '&:hover': { filter: 'brightness(0.95)' },
                             }}
                         >
-                            {loading ? <CircularProgress size={22} color="inherit" /> : 'Search'}
+                            {loading ? <CircularProgress size={20} color="inherit" /> : 'Search'}
                         </Button>
-                    </Stack>
 
-                    {searchResults && (
+                        <Box sx={{ flexGrow: 1 }} />
+
+                        {searchResults && (
+                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                <SortIcon sx={{ color: 'text.secondary' }} />
+                                <FormControl size="small" sx={{ minWidth: 160 }}>
+                                    <InputLabel>Sort by</InputLabel>
+                                    <Select value={sortBy} label="Sort by" onChange={(e) => setSortBy(e.target.value)}>
+                                        <MenuItem value="best_price">Price</MenuItem>
+                                        <MenuItem value="rating">Rating</MenuItem>
+                                        <MenuItem value="title">Name</MenuItem>
+                                        <MenuItem value="available_rooms">Availability</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <FormControl size="small" sx={{ minWidth: 140 }}>
+                                    <InputLabel>Order</InputLabel>
+                                    <Select
+                                        value={sortOrder}
+                                        label="Order"
+                                        onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                                    >
+                                        <MenuItem value="desc">High to Low</MenuItem>
+                                        <MenuItem value="asc">Low to High</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Stack>
+                        )}
+                    </Toolbar>
+                </Container>
+            </Paper>
+
+            <Container maxWidth="lg" sx={{ py: 3 }}>
+                {error && (
+                    <Alert
+                        severity="error"
+                        sx={{
+                            mb: 3,
+                            borderRadius: 2,
+                            border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
+                        }}
+                    >
+                        {error}
+                    </Alert>
+                )}
+
+                {searchResults && (
+                    <Box>
                         <Stack
-                            direction="row"
-                            spacing={2}
-                            justifyContent="center"
-                            sx={{ mt: 2, flexWrap: 'wrap' }}
+                            direction={{ xs: 'column', md: 'row' }}
+                            spacing={1.5}
+                            alignItems={{ md: 'center' }}
+                            justifyContent="space-between"
+                            sx={{ mb: 2 }}
                         >
-                            <FormControl size="small" sx={{ minWidth: 160 }}>
-                                <InputLabel>Sort by</InputLabel>
-                                <Select value={sortBy} label="Sort by" onChange={(e) => setSortBy(e.target.value)}>
-                                    <MenuItem value="best_price">Price</MenuItem>
-                                    <MenuItem value="rating">Rating</MenuItem>
-                                    <MenuItem value="title">Name</MenuItem>
-                                    <MenuItem value="available_rooms">Availability</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <FormControl size="small" sx={{ minWidth: 160 }}>
-                                <InputLabel>Order</InputLabel>
-                                <Select
-                                    value={sortOrder}
-                                    label="Order"
-                                    onChange={(e) => setSortOrder(e.target.value)}
-                                >
-                                    <MenuItem value="desc">High to Low</MenuItem>
-                                    <MenuItem value="asc">Low to High</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <Stack spacing={0.25}>
+                                <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                                    Hotels in {searchResults.search.location}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                                    <CalendarIcon sx={{ fontSize: 18 }} />
+                                    {new Date(searchResults.search.check_in_date).toLocaleDateString('en-US', {
+                                        weekday: 'short',
+                                        month: 'short',
+                                        day: 'numeric',
+                                    })}{' '}
+                                    –{' '}
+                                    {new Date(searchResults.search.check_out_date).toLocaleDateString('en-US', {
+                                        weekday: 'short',
+                                        month: 'short',
+                                        day: 'numeric',
+                                    })}
+                                    <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                                    {searchResults.pagination.total_count} result
+                                    {searchResults.pagination.total_count !== 1 ? 's' : ''}
+                                </Typography>
+                            </Stack>
                         </Stack>
-                    )}
-                </Paper>
-            </Box>
 
-            {error && (
-                <Alert
-                    severity="error"
-                    sx={{
-                        mb: 4,
-                        borderRadius: 2,
-                        border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
-                    }}
-                >
-                    {error}
-                </Alert>
-            )}
+                        <Stack spacing={2.5}>
+                            {searchResults.hotels.map((h, i) => (
+                                <React.Fragment key={h.id}>
+                                    <ResultItem hotel={h} />
+                                    {i < searchResults.hotels.length - 1 && <Divider sx={{ opacity: 0.6 }} />}
+                                </React.Fragment>
+                            ))}
+                        </Stack>
 
-            {searchResults && (
-                <Box>
-                    <Box sx={{ mb: 3 }}>
-                        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                            Hotels in {searchResults.search.location}
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary">
-                            {new Date(searchResults.search.check_in_date).toLocaleDateString('en-US', {
-                                weekday: 'short',
-                                month: 'short',
-                                day: 'numeric',
-                            })}{' '}
-                            −{' '}
-                            {new Date(searchResults.search.check_out_date).toLocaleDateString('en-US', {
-                                weekday: 'short',
-                                month: 'short',
-                                day: 'numeric',
-                            })}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {searchResults.pagination.total_count} hotel
-                            {searchResults.pagination.total_count !== 1 ? 's' : ''} available
-                        </Typography>
+                        {searchResults.pagination.total_pages > 1 && (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                                <Pagination
+                                    count={searchResults.pagination.total_pages}
+                                    page={searchResults.pagination.current_page}
+                                    onChange={handlePageChange}
+                                    color="primary"
+                                    size="large"
+                                    sx={{ '& .MuiPaginationItem-root': { borderRadius: 2 } }}
+                                />
+                            </Box>
+                        )}
                     </Box>
+                )}
 
-                    <Grid container spacing={3} sx={{ mb: 4 }}>
-                        {searchResults.hotels.map((hotel) => (
-                            <Grid key={hotel.id} item xs={12} sm={6} md={4}>
-                                <HotelCard hotel={hotel} />
-                            </Grid>
-                        ))}
-                    </Grid>
-
-                    {searchResults.pagination.total_pages > 1 && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <Pagination
-                                count={searchResults.pagination.total_pages}
-                                page={searchResults.pagination.current_page}
-                                onChange={handlePageChange}
-                                color="primary"
-                                size="large"
-                                sx={{
-                                    '& .MuiPaginationItem-root': {
-                                        borderRadius: 2,
-                                    },
-                                }}
-                            />
-                        </Box>
-                    )}
-                </Box>
-            )}
-        </Container>
+                {!loading && !searchResults && (
+                    <Paper
+                        variant="outlined"
+                        sx={{
+                            mt: 3,
+                            p: 3,
+                            borderRadius: 3,
+                            textAlign: 'center',
+                            borderStyle: 'dashed',
+                        }}
+                    >
+                        <Typography variant="body1" color="text.secondary">
+                            Enter a destination and dates to see results.
+                        </Typography>
+                    </Paper>
+                )}
+            </Container>
+        </Box>
     );
 }
 
