@@ -29,7 +29,8 @@ class HotelOffersController extends Controller
             }
 
             // Get all rooms for this hotel
-            $rooms = Room::where('hotel_id', '=', $this->hotel_id)->get();
+            $roomRows = Room::where('hotel_id', '=', $this->hotel_id)->get();
+            $rooms = array_map([Room::class, 'fromRow'], $roomRows);
 
             $roomsWithOffers = [];
             
@@ -53,7 +54,8 @@ class HotelOffersController extends Controller
                 }
                 
                 // Order offers by price ascending
-                $offers = $offersQuery->orderBy('price', 'ASC')->get();
+                $offerRows = $offersQuery->orderBy('price', 'ASC')->get();
+                $offers = array_map([Offer::class, 'fromRow'], $offerRows);
                 
                 $roomsWithOffers[] = [
                     'room' => $room->toArray(),

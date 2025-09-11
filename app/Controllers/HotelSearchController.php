@@ -37,7 +37,8 @@ class HotelSearchController extends Controller
             $perPage = min(max($this->per_page, 1), 100); // Limit between 1 and 100
             $offset = ($this->page - 1) * $perPage;
             
-            $hotels = $query->limit($perPage)->offset($offset)->get();
+            $rows = $query->limit($perPage)->offset($offset)->get();
+            $hotels = array_map([Hotel::class, 'fromRow'], $rows);
 
             // Get total count for pagination info
             $totalCount = Hotel::where('address', 'LIKE', '%' . $this->location . '%')->count();
