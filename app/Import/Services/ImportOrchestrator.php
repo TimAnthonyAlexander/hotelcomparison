@@ -78,14 +78,14 @@ class ImportOrchestrator
         
         foreach ($hotelDTOs as $hotelDTO) {
             try {
-                $hotel = $this->upsertHotel($hotelDTO);
-                $hotels[] = $hotel;
+                $result = $this->upsertHotel($hotelDTO);
+                $hotels[] = $result['hotel'];
                 $stats['hotels_processed']++;
                 
-                if ($hotel->id) {
-                    $stats['hotels_updated']++;
-                } else {
+                if ($result['created']) {
                     $stats['hotels_created']++;
+                } else {
+                    $stats['hotels_updated']++;
                 }
                 
             } catch (Exception $e) {
@@ -133,26 +133,26 @@ class ImportOrchestrator
                 $hotel = $hotelMap[$offerDTO->hotelId];
                 $result = $this->mapper->mapOffer($offerDTO, $this->provider->getProviderName(), $hotel);
                 
-                $room = $this->upsertRoom($result['room']);
-                $result['offer']->room = $room;
+                $roomResult = $this->upsertRoom($result['room']);
+                $result['offer']->room = $roomResult['room'];
                 
-                $offer = $this->upsertOffer($result['offer']);
+                $offerResult = $this->upsertOffer($result['offer']);
                 
                 // Track seen offers for reconciliation
-                $this->seenOfferIds[] = $offer->external_id;
+                $this->seenOfferIds[] = $offerResult['offer']->external_id;
                 
                 $stats['offers_processed']++;
-                if ($offer->id) {
-                    $stats['offers_updated']++;
-                } else {
+                if ($offerResult['created']) {
                     $stats['offers_created']++;
+                } else {
+                    $stats['offers_updated']++;
                 }
                 
                 $stats['rooms_processed']++;
-                if ($room->id) {
-                    $stats['rooms_updated']++;
-                } else {
+                if ($roomResult['created']) {
                     $stats['rooms_created']++;
+                } else {
+                    $stats['rooms_updated']++;
                 }
                 
             } catch (Exception $e) {
@@ -179,13 +179,13 @@ class ImportOrchestrator
         $stats['offers_deactivated'] = $affected;
     }
 
-    private function upsertHotel(object $hotelDTO): Hotel
+    private function upsertHotel(\App\Import\DTOs\HotelDTO $hotelDTO): array
     {
         $source = $this->provider->getProviderName();
         
         // Try to find existing hotel
-        $existing = Hotel::where('source', $source)
-            ->where('external_id', $hotelDTO->externalId)
+        $existing = Hotel::where('source', '=', $source)
+            ->where('external_id', '=', $hotelDTO->externalId)
             ->first();
         
         if ($existing) {
@@ -193,20 +193,20 @@ class ImportOrchestrator
             $hotel = $this->mapper->mapHotel($hotelDTO, $source);
             $hotel->id = $existing->id;
             $hotel->save();
-            return $hotel;
+            return ['hotel' => $hotel, 'created' => false];
         } else {
             // Create new
             $hotel = $this->mapper->mapHotel($hotelDTO, $source);
             $hotel->save();
-            return $hotel;
+            return ['hotel' => $hotel, 'created' => true];
         }
     }
 
-    private function upsertRoom(Room $room): Room
+    private function upsertRoom(Room $room): array
     {
         // Try to find existing room
-        $existing = Room::where('source', $room->source)
-            ->where('external_id', $room->external_id)
+        $existing = Room::where('source', '=', $room->source)
+            ->where('external_id', '=', $room->external_id)
             ->first();
         
         if ($existing) {
@@ -216,19 +216,19 @@ class ImportOrchestrator
             $existing->capacity = $room->capacity;
             $existing->hotel = $room->hotel;
             $existing->save();
-            return $existing;
+            return ['room' => $existing, 'created' => false];
         } else {
             // Create new
             $room->save();
-            return $room;
+            return ['room' => $room, 'created' => true];
         }
     }
 
-    private function upsertOffer(Offer $offer): Offer
+    private function upsertOffer(Offer $offer): array
     {
         // Try to find existing offer
-        $existing = Offer::where('source', $offer->source)
-            ->where('external_id', $offer->external_id)
+        $existing = Offer::where('source', '=', $offer->source)
+            ->where('external_id', '=', $offer->external_id)
             ->first();
         
         if ($existing) {
@@ -241,11 +241,11 @@ class ImportOrchestrator
             $existing->last_seen_at = $offer->last_seen_at;
             $existing->is_active = $offer->is_active;
             $existing->save();
-            return $existing;
+            return ['offer' => $existing, 'created' => false];
         } else {
             // Create new
             $offer->save();
-            return $offer;
+            return ['offer' => $offer, 'created' => true];
         }
     }
 }

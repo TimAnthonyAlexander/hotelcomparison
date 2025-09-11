@@ -6,17 +6,35 @@ use App\Import\Services\ImportOrchestrator;
 use App\Import\Services\ProviderRegistry;
 use App\Import\Services\ImportConfig;
 use App\Import\Mappers\DefaultMapper;
+use BaseApi\Console\Command;
+use BaseApi\Console\Application;
 
-class ImportHotelsCommand
+class ImportHotelsCommand implements Command
 {
-    public function run(array $args = []): void
+    public function name(): string
+    {
+        return 'import:hotels';
+    }
+
+    public function description(): string
+    {
+        return 'Import hotels from external providers';
+    }
+
+    public function execute(array $args, ?Application $app = null): int
+    {
+        return $this->run($args);
+    }
+
+    public function run(array $args = []): int
     {
         echo "Hotel Import System\n";
         echo "==================\n\n";
 
         try {
             // Parse command line arguments
-            $provider = $args['provider'] ?? 'amadeus';
+            $parsedArgs = $this->parseCommandLineArgs($args);
+            $provider = $parsedArgs['provider'] ?? 'amadeus';
             $scope = $this->parseScope($args);
             $searchParams = $this->parseSearchParams($args);
             
@@ -43,26 +61,31 @@ class ImportHotelsCommand
 
         } catch (\Exception $e) {
             echo "Error: " . $e->getMessage() . "\n";
-            exit(1);
+            return 1;
         }
+
+        return 0;
     }
 
     private function parseScope(array $args): array
     {
-        if (isset($args['city'])) {
-            return ['cityCode' => strtoupper($args['city'])];
+        // Parse command line arguments
+        $parsedArgs = $this->parseCommandLineArgs($args);
+        
+        if (isset($parsedArgs['city'])) {
+            return ['cityCode' => strtoupper($parsedArgs['city'])];
         }
         
-        if (isset($args['lat']) && isset($args['lng'])) {
+        if (isset($parsedArgs['lat']) && isset($parsedArgs['lng'])) {
             return [
-                'latitude' => (float) $args['lat'],
-                'longitude' => (float) $args['lng'],
-                'radius' => (int) ($args['radius'] ?? 50)
+                'latitude' => (float) $parsedArgs['lat'],
+                'longitude' => (float) $parsedArgs['lng'],
+                'radius' => (int) ($parsedArgs['radius'] ?? 50)
             ];
         }
         
-        if (isset($args['hotel-ids'])) {
-            return ['hotelIds' => explode(',', $args['hotel-ids'])];
+        if (isset($parsedArgs['hotel-ids'])) {
+            return ['hotelIds' => explode(',', $parsedArgs['hotel-ids'])];
         }
         
         // Default to first configured city
@@ -72,14 +95,34 @@ class ImportHotelsCommand
 
     private function parseSearchParams(array $args): array
     {
+        // Parse command line arguments
+        $parsedArgs = $this->parseCommandLineArgs($args);
         $defaults = ImportConfig::getDefaultSearchParams();
         
         return [
-            'checkInDate' => $args['checkin'] ?? $defaults['checkInDate'],
-            'checkOutDate' => $args['checkout'] ?? $defaults['checkOutDate'],
-            'adults' => (int) ($args['adults'] ?? $defaults['adults']),
-            'rooms' => (int) ($args['rooms'] ?? $defaults['rooms'])
+            'checkInDate' => $parsedArgs['checkin'] ?? $defaults['checkInDate'],
+            'checkOutDate' => $parsedArgs['checkout'] ?? $defaults['checkOutDate'],
+            'adults' => (int) ($parsedArgs['adults'] ?? $defaults['adults']),
+            'rooms' => (int) ($parsedArgs['rooms'] ?? $defaults['rooms'])
         ];
+    }
+
+    private function parseCommandLineArgs(array $args): array
+    {
+        $parsed = [];
+        
+        foreach ($args as $arg) {
+            if (strpos($arg, '--') === 0) {
+                $parts = explode('=', substr($arg, 2), 2);
+                if (count($parts) === 2) {
+                    $parsed[$parts[0]] = $parts[1];
+                } else {
+                    $parsed[$parts[0]] = true;
+                }
+            }
+        }
+        
+        return $parsed;
     }
 
     private function displayStats(array $stats): void

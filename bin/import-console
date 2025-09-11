@@ -1,0 +1,38 @@
+#!/usr/bin/env php
+<?php
+
+// Hotel Import Console Script
+// This extends the BaseAPI console with import-specific commands
+
+$baseAppPath = __DIR__ . '/..';
+
+// Load the autoloader
+$autoloader = $baseAppPath . '/vendor/autoload.php';
+if (!file_exists($autoloader)) {
+    echo "Error: Could not find composer autoloader. Run 'composer install' first.\n";
+    exit(1);
+}
+
+require_once $autoloader;
+
+use BaseApi\Console\Application;
+use App\Import\Commands\ImportHotelsCommand;
+
+// Load environment if available
+$envPath = $baseAppPath . '/.env';
+if (file_exists($envPath)) {
+    $dotenv = Dotenv\Dotenv::createImmutable($baseAppPath);
+    $dotenv->load();
+}
+
+$app = new Application($baseAppPath);
+
+// Register import commands
+$app->register('import:hotels', new ImportHotelsCommand());
+
+// You can add more import-related commands here in the future
+// $app->register('import:bookings', new ImportBookingsCommand());
+// $app->register('import:reviews', new ImportReviewsCommand());
+
+// Run the application
+exit($app->run($argv));

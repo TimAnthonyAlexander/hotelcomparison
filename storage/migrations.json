@@ -1,133 +1,404 @@
 {
-    "generated_at": "2025-09-11T20:04:12+00:00",
+    "generated_at": "2025-09-11T20:40:23+00:00",
     "plan": [
         {
-            "op": "create_table",
+            "op": "modify_column",
             "table": "hotels",
-            "columns": {
-                "title": {
-                    "name": "title",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "address": {
-                    "name": "address",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "rating": {
-                    "name": "rating",
-                    "type": "REAL",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "description": {
-                    "name": "description",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "id": {
-                    "name": "id",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": true
-                },
-                "created_at": {
-                    "name": "created_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP",
-                    "is_pk": false
-                },
-                "updated_at": {
-                    "name": "updated_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                    "is_pk": false
-                }
+            "column": {
+                "name": "title",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "title",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
         },
         {
-            "op": "add_index",
+            "op": "modify_column",
             "table": "hotels",
-            "index": {
-                "name": "idx_hotels_title",
-                "column": "title",
-                "type": "index"
+            "column": {
+                "name": "address",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "address",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
         },
         {
-            "op": "add_index",
+            "op": "modify_column",
             "table": "hotels",
-            "index": {
-                "name": "idx_hotels_rating",
-                "column": "rating",
-                "type": "index"
+            "column": {
+                "name": "rating",
+                "type": "REAL",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "rating",
+                "type": "real",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
         },
         {
-            "op": "create_table",
+            "op": "modify_column",
+            "table": "hotels",
+            "column": {
+                "name": "description",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "description",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "hotels",
+            "column": {
+                "name": "source",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "source",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "hotels",
+            "column": {
+                "name": "external_id",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "external_id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "hotels",
+            "column": {
+                "name": "id",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "old_column": {
+                "name": "id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "hotels",
+            "column": {
+                "name": "created_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "created_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "hotels",
+            "column": {
+                "name": "updated_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "updated_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
             "table": "offers",
-            "columns": {
-                "price": {
-                    "name": "price",
-                    "type": "REAL",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "room_id": {
-                    "name": "room_id",
-                    "type": "CHAR(36)",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "id": {
-                    "name": "id",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": true
-                },
-                "created_at": {
-                    "name": "created_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP",
-                    "is_pk": false
-                },
-                "updated_at": {
-                    "name": "updated_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                    "is_pk": false
-                }
+            "column": {
+                "name": "price",
+                "type": "REAL",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "price",
+                "type": "real",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
         },
         {
-            "op": "add_index",
+            "op": "modify_column",
             "table": "offers",
-            "index": {
-                "name": "idx_offers_price",
-                "column": "price",
-                "type": "index"
+            "column": {
+                "name": "room_id",
+                "type": "CHAR(36)",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "room_id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "currency",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "currency",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "check_in_date",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "check_in_date",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "check_out_date",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "check_out_date",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "source",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "source",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "external_id",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "external_id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "last_seen_at",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "last_seen_at",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "is_active",
+                "type": "INTEGER",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "is_active",
+                "type": "integer",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "id",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "old_column": {
+                "name": "id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "created_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "created_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "offers",
+            "column": {
+                "name": "updated_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "updated_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
         },
         {
             "op": "add_fk",
@@ -143,80 +414,181 @@
             "destructive": false
         },
         {
-            "op": "create_table",
-            "table": "rooms",
-            "columns": {
-                "title": {
-                    "name": "title",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "type": {
-                    "name": "type",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "capacity": {
-                    "name": "capacity",
-                    "type": "INTEGER",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "hotel_id": {
-                    "name": "hotel_id",
-                    "type": "CHAR(36)",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "id": {
-                    "name": "id",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": true
-                },
-                "created_at": {
-                    "name": "created_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP",
-                    "is_pk": false
-                },
-                "updated_at": {
-                    "name": "updated_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                    "is_pk": false
-                }
-            },
+            "op": "drop_fk",
+            "table": "offers",
+            "fk": "fk_offers_room_id_rooms_id",
             "destructive": false
         },
         {
-            "op": "add_index",
+            "op": "modify_column",
             "table": "rooms",
-            "index": {
-                "name": "idx_rooms_title",
-                "column": "title",
-                "type": "index"
+            "column": {
+                "name": "title",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "title",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
         },
         {
-            "op": "add_index",
+            "op": "modify_column",
             "table": "rooms",
-            "index": {
-                "name": "idx_rooms_type",
-                "column": "type",
-                "type": "index"
+            "column": {
+                "name": "type",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "type",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "rooms",
+            "column": {
+                "name": "capacity",
+                "type": "INTEGER",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "capacity",
+                "type": "integer",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "rooms",
+            "column": {
+                "name": "hotel_id",
+                "type": "CHAR(36)",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "hotel_id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "rooms",
+            "column": {
+                "name": "source",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "source",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "rooms",
+            "column": {
+                "name": "external_id",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "external_id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "rooms",
+            "column": {
+                "name": "id",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "old_column": {
+                "name": "id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "rooms",
+            "column": {
+                "name": "created_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "created_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "rooms",
+            "column": {
+                "name": "updated_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "updated_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
         },
         {
             "op": "add_fk",
@@ -232,71 +604,143 @@
             "destructive": false
         },
         {
-            "op": "create_table",
-            "table": "users",
-            "columns": {
-                "name": {
-                    "name": "name",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "password": {
-                    "name": "password",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "email": {
-                    "name": "email",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "active": {
-                    "name": "active",
-                    "type": "INTEGER",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": false
-                },
-                "id": {
-                    "name": "id",
-                    "type": "TEXT",
-                    "nullable": false,
-                    "default": null,
-                    "is_pk": true
-                },
-                "created_at": {
-                    "name": "created_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP",
-                    "is_pk": false
-                },
-                "updated_at": {
-                    "name": "updated_at",
-                    "type": "DATETIME",
-                    "nullable": true,
-                    "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                    "is_pk": false
-                }
-            },
+            "op": "drop_fk",
+            "table": "rooms",
+            "fk": "fk_rooms_hotel_id_hotels_id",
             "destructive": false
         },
         {
-            "op": "add_index",
+            "op": "modify_column",
             "table": "users",
-            "index": {
-                "name": "uniq_users_email",
-                "column": "email",
-                "type": "unique"
+            "column": {
+                "name": "name",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
             },
-            "destructive": false
+            "old_column": {
+                "name": "name",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "users",
+            "column": {
+                "name": "password",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "password",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "users",
+            "column": {
+                "name": "email",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "email",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "users",
+            "column": {
+                "name": "active",
+                "type": "INTEGER",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "active",
+                "type": "integer",
+                "nullable": false,
+                "default": null,
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "users",
+            "column": {
+                "name": "id",
+                "type": "TEXT",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "old_column": {
+                "name": "id",
+                "type": "text",
+                "nullable": false,
+                "default": null,
+                "is_pk": true
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "users",
+            "column": {
+                "name": "created_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "created_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
+        },
+        {
+            "op": "modify_column",
+            "table": "users",
+            "column": {
+                "name": "updated_at",
+                "type": "DATETIME",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "old_column": {
+                "name": "updated_at",
+                "type": "datetime",
+                "nullable": true,
+                "default": "CURRENT_TIMESTAMP",
+                "is_pk": false
+            },
+            "destructive": true
         }
-    ],
-    "applied_at": "2025-09-11T20:04:17+00:00"
+    ]
 }

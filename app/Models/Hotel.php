@@ -21,8 +21,7 @@ class Hotel extends BaseModel
         'title' => 'index',
         'rating' => 'index',
         'source' => 'index',
-        'external_id' => 'index',
-        ['source', 'external_id'] => 'unique'
+        'external_id' => 'index'
     ];
 
     public function rooms(): HasMany

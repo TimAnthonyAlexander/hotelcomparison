@@ -22,8 +22,7 @@ class Room extends BaseModel
         'title' => 'index',
         'type' => 'index',
         'source' => 'index',
-        'external_id' => 'index',
-        ['source', 'external_id'] => 'unique'
+        'external_id' => 'index'
     ];
 
     public function hotel(): BelongsTo

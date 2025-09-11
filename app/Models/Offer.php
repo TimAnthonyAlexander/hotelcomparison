@@ -26,8 +26,7 @@ class Offer extends BaseModel
         'external_id' => 'index',
         'check_in_date' => 'index',
         'is_active' => 'index',
-        'last_seen_at' => 'index',
-        ['source', 'external_id'] => 'unique'
+        'last_seen_at' => 'index'
     ];
 
     public function room(): BelongsTo
